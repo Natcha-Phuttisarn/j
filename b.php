@@ -2,41 +2,47 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>ณัฐชา พฤฒิสาร(นัส)</title>
+<title>ณัฐชา พฤฒิสาร (นัส)</title>
 </head>
 
 <body>
-<h1>ข้อมูลจังหวัด -- ณัฐชา พฤฒิสาร(นัส)</h1>
+<h1>ข้อมูลจังหวัด -- ณัฐชา พฤฒิสาร (นัส)</h1>
 
-<form method="post" action="">
-    ชื่อจังหวัด 
-    <input type="text" name="pname" autofocus required> <br>
-    
-    รูปภาพ 
-    <input type="file" name="pimage"> <br>
-    
+<form method="post" action="" enctype="multipart/form-data">
+    ชื่อจังหวัด<input type="text" name="rname" autofocus required><br>
+    รูปภาพ<input type="file" name="pimage"><br>
     ชื่อภาค
-    <select name="rid">
+    <select name="r_id">
         <?php
         include_once("connectdb.php");
         $sql3 = "SELECT * FROM regions ORDER BY r_name ASC";
         $rs3 = mysqli_query($conn, $sql3);
-        while ($data3 = mysqli_fetch_array($rs3)) {
-        ?>
-            <option value="<?php echo $data3['r_id']; ?>">
-                <?php echo $data3['r_name']; ?>
-            </option>
-        <?php } ?>
-    </select>
+        while($data3 = mysqli_fetch_array($rs3)){
+            ?>
+            <option value="<?php echo $data3['r_id'];?>"><?php echo $data3['r_name'];?></option>
+    <?php } ?>
+    </select><br><br>    
+    <button type="submit" name="Submit">บันทึก</button>
+    </form>
     <br><br>
 
-    <button type="submit" name="Submit">บันทึก</button>
-</form>
+    <?php            
+    if(isset($_POST['Submit'])){
+        include_once("connectdb.php");
 
-<br>
-<br>
+        $pname = $_POST['rname'];
+        $rid   = $_POST['r_id'];
+        $ext = pathinfo($_FILES['pimage']['name'], PATHINFO_EXTENSION);
 
-<table border="1">
+        $sql2 = "INSERT INTO provinces VALUES (NULL, '{$pname}','{$ext}','{$rid}')";
+        mysqli_query($conn, $sql2) or die ("insert ไม่ได้");
+        $pic_id = mysqli_insert_id($conn);
+
+        move_uploaded_file($_FILES['pimage']['tmp_name'],"images/".$pic_id.".".$ext);
+    }
+    ?>
+
+    <table border="1">
     <tr>
         <th>รหัสจังหวัด</th>
         <th>ชื่อจังหวัด</th>
@@ -64,5 +70,4 @@
     </table>
 
 </body>
-
 </html>
